@@ -12,18 +12,20 @@ ret,th1 = cv2.threshold(gray,180,255,cv2.THRESH_BINARY)
 ret,th2 = cv2.threshold(gray,120,255,cv2.THRESH_BINARY_INV)
 
 kernel = np.ones((5,5),np.uint8)
-#erosion = cv2.erode(th1,kernel,iterations = 1)
 
-dilation = cv2.dilate(th1,kernel,iterations = 0)
+dilation = cv2.dilate(th2,kernel,iterations = 0)
 
-#find contours
-ret, thresh = cv2.threshold(dilation, 127, 255, 0)
-contours, hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+# Calculate horizontal projection
+proj = np.sum(dilation,1)
 
-contours = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)[-2]
-for contour in contours:
-  cv2.drawContours(dilation, contour, -1, (0, 0, 255), 3)
-plt.figure()
+# Create output image same height as text, 500 px wide
+m = np.max(proj)
+w = 500
+result = np.zeros((proj.shape[0],500))
+
+# Draw a line for each row
+for row in range(dilation.shape[0]):
+   cv2.line(result, (0,row), (int(proj[row]*w/m),row), (255,255,255), 1)
 
 plt.subplot(131),plt.imshow(image),plt.title('original')
 plt.xticks([]), plt.yticks([])
@@ -31,8 +33,7 @@ plt.xticks([]), plt.yticks([])
 plt.subplot(132),plt.imshow(th1,  cmap="gray"),plt.title('binary')
 plt.xticks([]), plt.yticks([])
 
-plt.subplot(133),plt.imshow(dilation,  cmap="gray"),plt.title('contours')
+plt.subplot(133),plt.imshow(result,  cmap="gray"),plt.title('horizontal projection')
 plt.xticks([]), plt.yticks([])
 plt.show()
-
 
