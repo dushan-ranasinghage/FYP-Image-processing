@@ -38,14 +38,19 @@ def main(argv):
     closed = cv.erode(thresh, None, iterations=7)
     height, width = closed.shape[:2]
 
+    # # binary
+    # ret, th1 = cv.threshold(gray, 180, 255, cv.THRESH_BINARY)
+    # ret, th2 = cv.threshold(gray, 120, 255, cv.THRESH_BINARY_INV)
     z = [0] * height
     v = [0] * width
     hfg = [[0 for col in range(2)] for row in range(height)]
     lfg = [[0 for col in range(2)] for row in range(width)]
     box = [0, 0, 0, 0]
+
     # Horizontal projection
     a = 0
     emptyImage1 = np.zeros((height, width, 3), np.uint8)
+
     for y in range(0, height):
         for x in range(0, width):
             cp = closed[y, x]
@@ -57,6 +62,7 @@ def main(argv):
         z[y] = a
         # print z[y]
         a = 0
+
     # Select line split point based on horizontal projection value
     inline = 1
     start = 0
@@ -105,6 +111,7 @@ def main(argv):
                 cv.rectangle(img, (l1, z1), (l2, z2), (255, 0, 0), 2)
 
     # cv.namedWindow("main", cv.WINDOW_NORMAL)
+    # show_wait_destroy('binary', th1)
     show_wait_destroy('result', img)
 
     return 0
